@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>QR Relay</title>
+    <link rel="stylesheet" href="./src/styles.css">
+    <script type="module" src="./src/main.js"></script>
+  </head>
+  <body>
+    <main>
+      <p>Scan a QR code with your camera and display a verified copy.</p>
+      <p id="permission-note">Camera access may briefly activate the default camera to list cameras.</p>
+      <div id="preview-shell" hidden>
+        <video id="camera-preview" autoplay muted playsinline aria-label="Live camera preview"></video>
+      </div>
+      <canvas id="qr-result" hidden aria-label="Verified QR code"></canvas>
+      <div class="controls">
+        <label id="camera-label" for="camera-select">Camera</label>
+        <select id="camera-select" disabled>
+          <option value="">Enable cameras to choose</option>
+        </select>
+        <button id="enable-camera" type="button">Enable cameras</button>
+        <button id="start-scan" type="button" disabled>Start scan</button>
+        <button id="cancel-scan" type="button" hidden>Cancel</button>
+        <button id="reset" type="button" hidden>Scan again</button>
+      </div>
+      <p id="status" role="status" aria-live="polite">Enable cameras when you are ready to choose one.</p>
+      <p class="links">
+        <a href="https://github.com/zapster/qr-relay">GitHub repository</a>
+        · <a href="./third-party-notices.txt">Third-party notices</a>
+      </p>
+    </main>
+  </body>
+</html>
