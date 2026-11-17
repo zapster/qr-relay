@@ -42,7 +42,11 @@ button { cursor: pointer; }
 button:disabled { cursor: default; }
 
 #status { min-height: 1.5em; }
+#status.error { color: #a11; }
 .links { font-size: 13px; }
+a { color: #174f84; text-underline-offset: 2px; }
+a:hover { color: #0b355d; }
+a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 
 @media (max-width: 480px) {
   body { margin-top: 16px; }

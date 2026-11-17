@@ -10,8 +10,7 @@
   </head>
   <body>
     <main>
-      <p>Scan a QR code with your camera and display a verified copy.</p>
-      <p id="permission-note">Camera access may briefly activate the default camera to list cameras.</p>
+      <p>Scan a QR code and display a verified copy. <strong>Processing happens locally in this browser.</strong></p>
       <div id="preview-shell" hidden>
         <video id="camera-preview" autoplay muted playsinline aria-label="Live camera preview"></video>
       </div>
@@ -22,7 +21,6 @@
           <option value="">Enable cameras to choose</option>
         </select>
         <button id="enable-camera" type="button">Enable cameras</button>
-        <button id="start-scan" type="button" disabled>Start scan</button>
         <button id="cancel-scan" type="button" hidden>Cancel</button>
         <button id="reset" type="button" hidden>Scan again</button>
       </div>

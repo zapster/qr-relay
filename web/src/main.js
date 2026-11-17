@@ -6,7 +6,6 @@ const preview = document.querySelector('#preview-shell');
 const selector = document.querySelector('#camera-select');
 const selectorLabel = document.querySelector('#camera-label');
 const enableButton = document.querySelector('#enable-camera');
-const startButton = document.querySelector('#start-scan');
 const cancelButton = document.querySelector('#cancel-scan');
 const resetButton = document.querySelector('#reset');
 const status = document.querySelector('#status');
@@ -43,7 +42,7 @@ function clearResult() {
   resultCanvas.hidden = true;
 }
 
-function stopSession(clearSelection = false) {
+function stopSession(clearDevices = false) {
   session += 1;
   scanning = false;
   preparing = false;
@@ -57,15 +56,12 @@ function stopSession(clearSelection = false) {
   enableButton.hidden = false;
   selectorLabel.hidden = false;
   selector.hidden = false;
-  startButton.hidden = false;
   resetButton.hidden = true;
-  startButton.disabled = !selector.value;
-  selector.disabled = false;
-  if (clearSelection) {
+  selector.disabled = selector.options.length <= 1;
+  selector.value = '';
+  if (clearDevices) {
     selector.replaceChildren(new Option('Enable cameras to choose', ''));
-    selector.value = '';
     selector.disabled = true;
-    startButton.disabled = true;
   }
   clearCapture();
 }
@@ -105,7 +101,6 @@ async function enableCameras() {
   const request = session;
   preparing = true;
   enableButton.disabled = true;
-  startButton.disabled = true;
   cancelButton.hidden = false;
   try {
     const devices = await camera.prepare();
@@ -124,8 +119,7 @@ async function enableCameras() {
         device.deviceId,
       ));
     });
-    selector.disabled = false;
-    startButton.disabled = true;
+    selector.disabled = devices.length === 0;
     enableButton.disabled = false;
     setStatus(devices.length ? 'Choose a camera to start.' : 'No cameras found. Connect one and try again.', !devices.length);
   } catch (error) {
@@ -167,6 +161,7 @@ function scanFrame(request) {
     scanning = false;
     window.clearTimeout(frameTimer);
     camera.stop();
+    selector.value = '';
     video.hidden = true;
     preview.hidden = true;
     cancelButton.hidden = true;
@@ -174,7 +169,6 @@ function scanFrame(request) {
     enableButton.hidden = true;
     selectorLabel.hidden = true;
     selector.hidden = true;
-    startButton.hidden = true;
     setStatus('Verifying QR code…');
 
     try {
@@ -203,20 +197,19 @@ function scanFrame(request) {
   }
 }
 
-async function startScan() {
-  if (scanning || preparing || !selector.value) return;
+async function startScan(deviceId) {
+  if (scanning || preparing || !deviceId) return;
   stopSession();
   const request = session;
   scanning = true;
   selector.disabled = true;
   enableButton.disabled = true;
-  startButton.disabled = true;
   cancelButton.hidden = false;
   preview.hidden = false;
   video.hidden = false;
   setStatus('Starting camera…');
   try {
-    const started = await camera.start(selector.value);
+    const started = await camera.start(deviceId);
     if (request !== session) return;
     if (!started) {
       stopSession();
@@ -239,20 +232,15 @@ function cancel() {
 }
 
 function reset() {
-  stopSession(true);
+  stopSession();
   clearResult();
-  enableButton.hidden = false;
-  selector.hidden = false;
-  resetButton.hidden = true;
-  setStatus('Enable cameras when you are ready to scan again.');
+  setStatus('Choose a camera to scan again.');
 }
 
 enableButton.addEventListener('click', enableCameras);
 selector.addEventListener('change', () => {
-  startButton.disabled = !selector.value;
-  if (selector.value) setStatus('Camera selected. Start scanning when ready.');
+  if (selector.value) startScan(selector.value);
 });
-startButton.addEventListener('click', startScan);
 cancelButton.addEventListener('click', cancel);
 resetButton.addEventListener('click', reset);
 
