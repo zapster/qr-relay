@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=QR Relay
-Comment=Show a verified QR code from a camera
-Exec=@EXEC@
-Icon=applications-graphics
-Terminal=false
-Categories=Utility;
-StartupWMClass=cc.zapster.qr-relay
