@@ -1,5 +1,4 @@
-import jsQR from 'jsqr';
-import QRCode from 'qrcode';
+import { jsQR, QRCode } from '../vendor/qr-libraries.js';
 
 /**
  * Decode QR payload bytes without interpreting the QR's text representation.

@@ -1,28 +1,39 @@
 # Browser-only QR Relay
 
-The browser application at the repository root scans QR codes and displays
-verified copies, with QR processing performed locally in this browser. It uses
-the browser camera API and packages its QR encoder and decoder into the site at
-build time. Camera access requires a secure context; `localhost` and
-`127.0.0.1` over HTTP are secure contexts in supported browsers. A non-loopback
-LAN address requires trusted HTTPS. This project does not create certificates,
-configure HTTPS, or install system packages.
+The browser application consists of files at the repository root and scans QR
+codes to display verified copies, with QR processing performed locally in this
+browser. It uses the browser camera API, native HTML/CSS/JavaScript modules, and
+checked-in vendored QR libraries. Camera access requires a secure context;
+`localhost` and `127.0.0.1` over HTTP are secure contexts in supported browsers.
+A non-loopback LAN address requires trusted HTTPS. This project does not create
+certificates, configure HTTPS, or install system packages.
 
-## Build and serve
+## Run locally
 
-Install Node.js and npm using the normal trusted toolchain for your platform:
+From the repository root, serve the files over loopback HTTP:
 
 ```sh
-npm ci
-npm run build
-python3 -m http.server --bind 127.0.0.1 --directory dist 8000
+python3 -m http.server --bind 127.0.0.1 8000
 ```
 
 Open `http://127.0.0.1:8000/` and grant camera permission when prompted.
-`npm run build` is a build-time requirement only; Node.js and npm are not needed
-to use the built site. The site does not use a CDN or fetch QR libraries at
-runtime. The local HTTP server serves the site's bundled assets, and the browser
-uses its camera API. No camera image or decoded payload is uploaded by the app.
+Node.js and npm are not needed to serve or use the site. GitHub Pages publishes
+the checked-in files from the repository root on `main`; the root `.nojekyll`
+file skips Jekyll processing. The site loads its checked-in scripts from the
+same origin, without a CDN or package-registry requests. The local server serves
+these files, and the browser uses its camera API. No camera image or decoded
+payload is uploaded by the app.
+
+## Updating vendored dependencies
+
+Node.js and npm are needed only when refreshing vendored dependencies. From the
+repository root, run `npm ci` and then `npm run vendor`. Review the generated
+vendor output, third-party notices, and manifest/lockfile changes before
+committing them. The vendored jsQR source has a source-version guard for its
+local parser patch; a jsQR update requires reviewing the guard, patch, and
+notices rather than bypassing the guard or relying on an npm update alone.
+Vite and Rolldown are used by the optional dependency-refresh tooling, not to
+build the site for serving or publishing.
 
 ## Camera and privacy
 
@@ -45,13 +56,13 @@ the app's control.
 
 ## QR payload fidelity
 
-The build applies a tracked, source-version-guarded parser transform to jsQR
-1.4.0. It accepts Numeric, Alphanumeric, Byte, and Kanji segments with valid
-ECI prefixes, rejects unsupported modes (including Structured Append, FNC1,
-and Hanzi/reserved modes), and rejects malformed or truncated ECI prefixes
-instead of accepting partial data. This is a local parser guard; it is not
-behavior supplied by upstream jsQR, and it does not claim comprehensive
-validation of all ECI assignment numbers.
+The vendored jsQR 1.4.0 source includes a local parser patch, guarded by the
+expected source version. It accepts Numeric, Alphanumeric, Byte, and Kanji
+segments with valid ECI prefixes, rejects unsupported modes (including
+Structured Append, FNC1, and Hanzi/reserved modes), and rejects malformed or
+truncated ECI prefixes instead of accepting partial data. This is a local
+parser guard; it is not behavior supplied by upstream jsQR, and it does not
+claim comprehensive validation of all ECI assignment numbers.
 
 The app compares the decoder-reported payload bytes with a second decode of the
 generated image using the same decoder. It does not convert QR data through
@@ -68,14 +79,16 @@ Cancel; enforcing a hard deadline would require moving decoding to a worker.
 
 ## Content security and offline behavior
 
-Production assets are bundled with relative URLs and are served from the same
-origin. The implementation does not require a runtime CDN, `eval`, or inline
-script. A restrictive same-origin content security policy is used by the page.
-An offline-capable PWA/service worker is intentionally deferred.
+The site's HTML, CSS, JavaScript modules, and vendored dependencies use relative
+URLs and are served from the same origin. The implementation does not require a
+runtime CDN, `eval`, or inline script. A restrictive same-origin content
+security policy is used by the page. An offline-capable PWA/service worker is
+intentionally deferred.
 
 ## Third-party code
 
-The browser bundle uses jsQR 1.4.0 (Apache License 2.0), qrcode 1.5.4 and
-dijkstrajs 1.0.3 (MIT), and an emitted Rolldown 1.2.19 interoperability helper
-(MIT). Vite 8.3.8 is build-only. The public notices file includes the package
-licenses and applicable source attributions.
+The checked-in vendor files include jsQR 1.4.0 (Apache License 2.0), qrcode
+1.5.4 and dijkstrajs 1.0.3 (MIT), and a Rolldown 1.2.19 interoperability helper
+(MIT). Vite 8.3.8 is used only by optional dependency-refresh tooling. The
+`vendor/third-party-notices.txt` file includes the package licenses and
+applicable source attributions.
