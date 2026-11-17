@@ -1,4 +1,6 @@
-import { jsQR, QRCode } from '../vendor/qr-libraries.js';
+import QRCode from '../vendor/qrcode.js';
+
+const jsQR = globalThis.jsQR;
 
 /**
  * Decode QR payload bytes without interpreting the QR's text representation.

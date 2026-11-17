@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 import { dirname, resolve } from 'node:path';
 
 const require = createRequire(import.meta.url);
-const jsqrEntry = require.resolve('jsqr');
+export const jsqrEntry = require.resolve('jsqr');
 const jsqrDirectory = dirname(dirname(jsqrEntry));
 const packageJson = JSON.parse(readFileSync(resolve(jsqrDirectory, 'package.json'), 'utf8'));
 const EXPECTED_VERSION = '1.4.0';
@@ -79,35 +79,4 @@ export function patchJsqrSource(source) {
     'mode-dispatch tail',
   );
   return source;
-}
-
-export function strictJsqrPlugin({ requireTransform = true } = {}) {
-  if (packageJson.version !== EXPECTED_VERSION) {
-    throw new Error(`Strict jsQR patch: expected jsqr ${EXPECTED_VERSION}, found ${packageJson.version}`);
-  }
-  let patched = false;
-  return {
-    name: 'strict-jsqr-decoder',
-    enforce: 'pre',
-    buildStart() {
-      patched = false;
-    },
-    transform(source, id) {
-      const cleanId = id.split('?')[0];
-      if (cleanId !== jsqrEntry) return null;
-      const code = patchJsqrSource(source);
-      patched = true;
-      return { code, map: null };
-    },
-    generateBundle(_options, bundle) {
-      if (requireTransform && !patched) {
-        throw new Error(`Strict jsQR patch: expected decoder was not transformed (${jsqrEntry})`);
-      }
-      if (requireTransform) {
-        for (const output of Object.values(bundle)) {
-          if (output.type === 'chunk') output.code = `${JSQR_MODIFICATION_NOTICE}\n${output.code}`;
-        }
-      }
-    },
-  };
 }
