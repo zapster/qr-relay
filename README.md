@@ -4,6 +4,10 @@ QR Relay scans a QR code with a camera and displays a verified copy. QR
 processing happens locally in this browser; the app does not interpret QR
 contents or upload camera images or decoded payloads.
 
+Hosted app: [zapster.github.io/qr-relay](https://zapster.github.io/qr-relay/).
+Pushes to `main` deploy automatically; the GitHub Actions workflow can also be
+run manually from the Actions tab.
+
 ## Build and run
 
 Build the browser app with Node.js and npm:
