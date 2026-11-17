@@ -13,11 +13,9 @@ run manually from the Actions tab.
 Build the browser app with Node.js and npm:
 
 ```sh
-cd web
 npm ci
 npm run build
-cd ..
-python3 -m http.server --bind 127.0.0.1 --directory web/dist 8000
+python3 -m http.server --bind 127.0.0.1 --directory dist 8000
 ```
 
 Open `http://127.0.0.1:8000/`, allow camera access, and select a camera to start
@@ -37,4 +35,4 @@ The browser bundle includes these runtime dependencies:
 [Rolldown 1.2.19](https://github.com/rolldown/rolldown/tree/v1.2.19) (MIT) is
 the build engine; a small interoperability helper from it is emitted in the
 browser bundle. [Vite 8.3.8](https://github.com/vitejs/vite/tree/v8.3.8) (MIT)
-is build-time only. Exact npm pins are recorded in `web/package-lock.json`.
+is build-time only. Exact npm pins are recorded in `package-lock.json`.

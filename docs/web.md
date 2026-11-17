@@ -1,23 +1,21 @@
 # Browser-only QR Relay
 
-The `web/` application scans QR codes and displays verified copies, with QR
-processing performed locally in this browser. It uses the browser camera API
-and packages its QR encoder and decoder into the site at build time. Camera
-access requires a secure context; `localhost` and `127.0.0.1` over HTTP are
-secure contexts in supported browsers. A non-loopback LAN address requires
-trusted HTTPS. This project does not create certificates, configure HTTPS, or
-install system packages.
+The browser application at the repository root scans QR codes and displays
+verified copies, with QR processing performed locally in this browser. It uses
+the browser camera API and packages its QR encoder and decoder into the site at
+build time. Camera access requires a secure context; `localhost` and
+`127.0.0.1` over HTTP are secure contexts in supported browsers. A non-loopback
+LAN address requires trusted HTTPS. This project does not create certificates,
+configure HTTPS, or install system packages.
 
 ## Build and serve
 
 Install Node.js and npm using the normal trusted toolchain for your platform:
 
 ```sh
-cd web
 npm ci
 npm run build
-cd ..
-python3 -m http.server --bind 127.0.0.1 --directory web/dist 8000
+python3 -m http.server --bind 127.0.0.1 --directory dist 8000
 ```
 
 Open `http://127.0.0.1:8000/` and grant camera permission when prompted.

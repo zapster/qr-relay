@@ -1,4 +1,4 @@
 __pycache__/
 *.py[cod]
-web/node_modules/
-web/dist/
+node_modules/
+dist/
